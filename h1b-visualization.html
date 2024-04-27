@@ -223,7 +223,44 @@
                     }
                 });
 
+                // Data for the NAICS Sectors Chart
+                let sectorCounts = {};
+                data.forEach(row => {
+                    sectorCounts[row['NAICS_Sector']] = (sectorCounts[row['NAICS_Sector']] || 0) + row['Continuing Approvals'] + row['Continuing Denials'];
+                });
+                let sectorsData = {
+                    labels: Object.keys(sectorCounts),
+                    datasets: [{
+                        label: 'Average Continuing Petitions by Sector',
+                        data: Object.values(sectorCounts),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#9B59B6', '#E7E9ED']
+                    }]
+                };
+                new Chart(document.getElementById('sectorsChart').getContext('2d'), {
+                    type: 'bar',
+                    data: sectorsData,
+                    options: {
+                        title: {
+                            display: true,
+                            fontStyle: 'bold',
+                            fontSize: 18
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: function(value, index, values) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }]
+                        }
+                    }
+                });
+
                        }});
+
+
 
     </script>
 </body>
