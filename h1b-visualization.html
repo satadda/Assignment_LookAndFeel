@@ -86,12 +86,12 @@
         </div>
         
         <!-- Distribution of H1B Petitions by Top Cities -->
-        <div class="chart-container">
+        <!-- <div class="chart-container">
             <div>
                 <h2>Distribution of H1B Petitions by Top Cities</h2>
                 <canvas id="newChart"></canvas>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="center" id="myCenter" style="display:flex;justify-content: space-around;">
         <a>copyrights@2024</a>
@@ -261,6 +261,38 @@
                        }});
 
 
+        
+                // Data for the States Chart
+                        let stateCounts = {};
+                data.forEach(row => {
+                    stateCounts[row['State']] = (stateCounts[row['State']] || 0) + 1;
+                });
+                let statesData = {
+                    labels: Object.keys(stateCounts),
+                    datasets: [{
+                        label: 'Number of Petitions by State',
+                        data: Object.values(stateCounts),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#9B59B6', '#E7E9ED', '#34495E', '#16A085', '#27AE60', '#2980B9', '#8E44AD']
+                    }]
+                };
+                new Chart(document.getElementById('statesChart').getContext('2d'), {
+                    type: 'pie',
+                    data: statesData,
+                    options: {
+                        
+                        title: {
+                            display: true,
+                            fontStyle: 'bold',
+                            fontSize: 18
+                        },
+                        layout: {
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        }
+                    }
+                });
 
     </script>
 </body>
