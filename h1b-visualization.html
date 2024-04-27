@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/header.css">
     <link rel="stylesheet" type="text/css" href="css/SIMStyles.css">
@@ -10,28 +10,34 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-        <title>H1B Petitions Data Visualization</title>
-        
-        <style>
-            .chart-container {
-                display: flex;
-                justify-content: center;
-            }
+    <title>H1B Petitions Data Visualization</title>
     
-            canvas {
-                max-width: 100%;
-                height: auto;
-            }
-        </style>
-    </head>
+    <style>
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .chart-container > div {
+            margin: 20px;
+            width: 800px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
 <body>
-        <div class="logo">
-            <img src="img/h1b.png" alt="USF_LOGO" height="60" width="100" />
-    
-            <h2 class="heading">
-                H1B Petition Information
-            </h2>
-        </div>
+    <div class="logo">
+        <img src="img/h1b.png" alt="USF_LOGO" height="60" width="100" />
+
+        <h2 class="heading">
+            H1B Petition Information
+        </h2>
+    </div>
     <p>
         <div class="center" id="myCenter" style="font-family:sans-serif; align-content:center">
             <a href="index.html"> Home </a>
@@ -48,21 +54,44 @@
         </div>
     </p>
 
- 
-   <div class="container">
-    <h1 id="main-heading">H1B Petitions Data Visualization</h1>
+    <div class="container">
+        <h1 id="main-heading">H1B Petitions Data Visualization</h1>
 
-<style>
-    #main-heading {
-        text-align: center;
-    }
-</style>
-    <div class="chart-container">
-        <div>
-            <h2>Trends in H1B Petitions Over Years</h2>
-            <canvas id="trendsChart"></canvas>
+        <style>
+            #main-heading {
+                text-align: center;
+            }
+        </style>
+        <div class="chart-container">
+            <div>
+                <h2>Trends in H1B Petitions Over Years</h2>
+                <canvas id="trendsChart"></canvas>
+            </div>
+            <div>
+                <h2>Top 10 Employers Filing H1B Petitions</h2>
+                <canvas id="employersChart"></canvas>
+            </div>
+            <div>
+                <h2>Average Continuing Approvals and Denials by NAICS Sector</h2>
+                <canvas id="sectorsChart"></canvas>
+            </div>
+            <div>
+                <h2>Distribution of H1B Petitions by State</h2>
+                <canvas id="statesChart"></canvas>
+            </div>
+            <div>
+                <h2>Distribution of H1B Petitions by Top Cities</h2>
+                <canvas id="topCitiesChart"></canvas>
+            </div>
         </div>
-    </div>
+        
+        <!-- Distribution of H1B Petitions by Top Cities -->
+        <div class="chart-container">
+            <div>
+                <h2>Distribution of H1B Petitions by Top Cities</h2>
+                <canvas id="newChart"></canvas>
+            </div>
+        </div>
     </div>
     <div class="center" id="myCenter" style="display:flex;justify-content: space-around;">
         <a>copyrights@2024</a>
@@ -102,36 +131,68 @@
                     ]
                 };
                 new Chart(document.getElementById('trendsChart').getContext('2d'), {
-    type: 'line',
-    data: trendsData,
-    options: {
-        maintainAspectRatio: true,
-        title: {
-            display: true,
-            fontStyle: 'bold',
-            fontSize: 18
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    callback: function(value, index, values) {
-                        return value.toLocaleString();
+                    type: 'line',
+                    data: trendsData,
+                    options: {
+                        maintainAspectRatio: true,
+                        title: {
+                            display: true,
+                            fontStyle: 'bold',
+                            fontSize: 18
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    callback: function(value, index, values) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return value; // Return the full year value
+                                    }
+                                }
+                            }]
+                        }
                     }
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                    callback: function(value, index, values) {
-                        return value; // Return the full year value
+                });
+
+                // Data for the Employers Chart
+                let employerCounts = {};
+                data.forEach(row => {
+                    employerCounts[row['Employer']] = (employerCounts[row['Employer']] || 0) + 1;
+                });
+                let topEmployers = Object.keys(employerCounts).sort((a, b) => employerCounts[b] - employerCounts[a]).slice(0, 10);
+                let employersData = {
+                    labels: topEmployers,
+                    datasets: [{
+                        label: 'Number of Petitions by Employer',
+                        data: topEmployers.map(employer => employerCounts[employer]),
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#9B59B6', '#E7E9ED', '#34495E', '#16A085', '#27AE60', '#2980B9', '#8E44AD']
+                    }]
+                };
+                new Chart(document.getElementById('employersChart').getContext('2d'), {
+                    type: 'doughnut',
+                    data: employersData,
+                    options: {
+                        title: {
+                            display: true,
+                            fontStyle: 'bold',
+                            fontSize: 18
+                        },
+                        layout: {
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        }
                     }
-                }
-            }]
-        }
-    }
-});
-            }
-        });
+                });
+
+                       });
     </script>
 </body>
 </html>
